@@ -10,6 +10,7 @@ exception OutOfVariablesError
 
 
 let possible_variables = List.map (fun x -> char_to_string (char_of_int x)) ((range 97 123) @ (range 65 91))
+let possible_variables_set=StringSet.of_list possible_variables
 
 
 (* I used StringSet operations from here: https://ocaml.org/learn/tutorials/modules.html *)
