@@ -20,9 +20,13 @@ let rec fv term =
 | Application(t1,t2) -> StringSet.union (fv t1) (fv t2)
 | Abstraction(x,t) -> StringSet.remove x (fv t)
 
-let fresh_var t = 
-let temp = StringSet.filter (fun str -> if StringSet.mem str t then false else true) possible_variables_set in
-  StringSet.choose temp;;
+let fresh_var t =
+let temp = StringSet.filter (fun str -> if StringSet.mem str t then false else true) possible_variables_set 
+in (let temp2=StringSet.is_empty temp in
+ match temp2 with 
+ | true -> raise OutOfVariablesError
+ | false -> StringSet.choose temp
+)
   
 (* [x->s]t *)
 let rec substitute x s t =
