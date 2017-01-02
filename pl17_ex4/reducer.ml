@@ -34,7 +34,7 @@ let rec substitute x s trm =
     | Variable y            -> let cmpResult = compare x y in 
                                (match cmpResult with
                                 | 0    -> s   (* [x->s]x = s *)
-                                | _    -> y   (* [x->s]y = y *)
+                                | _    -> trm (* [x->s]y = y *)
                                )
     | Application(t1, t2)   -> Application((substitute x s t1), (substitute x s t2))
     | Abstraction(y, t)     -> let cmpResult = compare x y in 
@@ -44,7 +44,7 @@ let rec substitute x s trm =
                                           (match isYFreeInS with 
                                           | false -> Abstraction(y, (substitute x s t))
                                           | true  -> let z = fresh_var (StringSet.add x (StringSet.union (fv s) (fv t))) in
-                                                     Abstraction(z, (substitute x s (substitute y z t)))
+                                                     Abstraction(z, (substitute x s (substitute y (Variable(z)) t)))
                                           )
                                )
   

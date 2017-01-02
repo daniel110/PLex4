@@ -1,0 +1,116 @@
+Tests for substitute (not automatic tests):
+
+- [x->s]x = s
+                             x          s          x
+    format_term (substitute "x" (parse "y")(parse "x"));;
+        y
+    format_term (substitute "x" (parse "x")(parse "x"));; 
+        x
+    format_term (substitute "x" (parse "(\\y. y)")(parse "x"));; 
+        (\\y. y)
+    format_term (substitute "x" (parse "(\\x. x)")(parse "x"));; 
+        (\\x. x)
+    format_term (substitute "x" (parse "(x y)")(parse "x"));;   
+        (x y)
+    format_term (substitute "y" (parse "z")(parse "y"));;
+        z
+        
+- [x->s]y = y
+                             x          s          y
+    format_term (substitute "x" (parse "s")(parse "y"));;
+        y
+    format_term (substitute "x" (parse "x")(parse "y"));; 
+        y
+    format_term (substitute "x" (parse "(\\y. y)")(parse "y"));;
+        y
+    format_term (substitute "x" (parse "(\\x. x)")(parse "y"));; 
+        y
+    format_term (substitute "x" (parse "(x y)")(parse "y"));;
+        y
+    format_term (substitute "y" (parse "z")(parse "x"));;
+        x
+        
+- [x->s](t1 t2) = ([x->s]t1)([x->s]t2)
+                             x          s          (t1 t2)
+    format_term (substitute "x" (parse "s")(parse "(x x)"));;
+        (s s)
+    format_term (substitute "x" (parse "s")(parse "(y y)"));;
+        (y y)
+    format_term (substitute "x" (parse "s")(parse "(x y)"));;
+        (s y)
+    format_term (substitute "x" (parse "s")(parse "((x x) x)"));;
+        ((s s) s)
+    format_term (substitute "x" (parse "s")(parse "((x y) y)"));;
+        ((s y) y)
+    
+
+- [x->s](\x. t) = \x. t
+                             x          s          (\\x. t)
+    format_term (substitute "x" (parse "s")(parse "(\\x. t)"));;
+        (\\x. t)
+    format_term (substitute "x" (parse "s")(parse "(\\x. x)"));;
+        (\\x. x)
+    format_term (substitute "x" (parse "s")(parse "(\\x. (t1 t2))"));;
+        (\\x. (t1 t2))
+    format_term (substitute "x" (parse "s")(parse "(\\x. (\\x. x))"));;
+        (\\x. (\\x. x))
+    format_term (substitute "x" (parse "x")(parse "(\\x. x)"));;
+        (\\x. x)
+    format_term (substitute "x" (parse "(t1 t2)")(parse "(\\x. x)"));;
+        (\\x. x)
+    format_term (substitute "x" (parse "(\\x.x)")(parse "(\\x. x)"));;
+        (\\x. x)
+    format_term (substitute "y" (parse "x")(parse "(\\y. y)"));;
+        (\\y. y)
+    
+    
+- [x->s](\y. t) = \y. ([x->s]t), if y not in FV(s)
+                             x          s          (\\y. t)
+    format_term (substitute "x" (parse "s")(parse "(\\y. x)"));;
+        (\\y. s)
+    format_term (substitute "x" (parse "(t1 t2)")(parse "(\\y. x)"));;
+        (\\y. (t1 t2))
+    format_term (substitute "x" (parse "(\\x. t)")(parse "(\\y. x)"));;
+        (\\y. (\\x. t))
+    format_term (substitute "x" (parse "(\\y. y)")(parse "(\\y. x)"));;
+        (\\y. (\\y. y))
+    format_term (substitute "x" (parse "s")(parse "(\\y. y)"));;
+        (\\y. y)
+    format_term (substitute "x" (parse "(t1 t2)")(parse "(\\y. y)"));;
+        (\\y. y)    
+    format_term (substitute "x" (parse "(\\x. t)")(parse "(\\y. y)"));;
+        (\\y. y)
+    format_term (substitute "x" (parse "(\\y. y)")(parse "(\\y. y)"));;
+        (\\y. y)
+        
+
+- [x->s](\y. t) = \z. ([x->s]([y->z] t)), if y in FV(s), z not in FV(s) v FV(t) v {x}
+                             x          s          (\\y. t)
+    format_term (substitute "x" (parse "y")(parse "(\\y. t)"));;
+        (\\A. t)
+    format_term (substitute "x" (parse "y")(parse "(\\y. y)"));;
+        (\\A. A)
+    format_term (substitute "x" (parse "y")(parse "(\\y. x)"));;
+        (\\A. y)
+    format_term (substitute "x" (parse "y")(parse "(\\y. (x y))"));;
+        (\\A. (y A))
+    format_term (substitute "x" (parse "(x y)")(parse "(\\y. (x y))"));;
+        (\\A. ((x y) A))
+
+
+- some more tests, taken from the lectures
+                             x          s          t
+    format_term (substitute "x" (parse "y")(parse "x"));; (* lecture 5/6, slide 14 *)
+        y 
+    format_term (substitute "x" (parse "(u r)")(parse "(x (\\x. x))"));; (* lecture 5/6, slide 15 *)
+        ((u r) (\\x. x))
+    format_term (substitute "x" (parse "(y z)")(parse "(\\w. (x w))"));; (* lecture 5/6, slide 16 *)
+        (\\w. ((y z) w))
+    format_term (substitute "x" (parse "(\\x. (x x))")(parse "(x x)"));; (* lecture 5/6, slide 20 *)
+        ((\\x. (x x)) (\\x. (x x)))
+    format_term (substitute "x" (parse "((\\x. (x x)) (\\x. (x x)))")(parse "y"));; (* lecture 5/6, slide 22 *)
+        y
+    format_term (substitute "x" (parse "((\\u. u)(\\w. w))")(parse "(\\y. ((\\z. z) y))"));; (* lecture 5/6, slide 28 *)
+        (\\y. ((\\z. z) y))
+        
+    
