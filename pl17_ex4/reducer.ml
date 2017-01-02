@@ -24,6 +24,21 @@ let fresh_var t =
 let temp = StringSet.filter (fun str -> if StringSet.mem str t then false else true) possible_variables_set in
   StringSet.choose temp;;
   
+(* [x->s]t *)
+let rec substitute x s t =
+    match t with
+    | Variable y            -> let cmpResult = compare x y in 
+                               (match cmpResult with
+                                | 0    -> s (* [x->s]x = s *)
+                                | _    -> t (* [x->s]y = y *))
+    | Application(t1, t2)   ->  Application((substitute x s t1), (substitute x s t2))
+    | _             -> raise (SyntaxError "Not Implemented yet.")
+  
 (*
   ADD FUNCTIONS BELOW
 *)
+
+
+
+
+
