@@ -48,25 +48,7 @@ let rec substitute x s trm =
                                           )
                                )
   
-  
-let rec reduce_strict trm = 
-    match trm with
-    | Application(t1 t2) -> (match t1 with
-                             | Abstraction(x, t1Body) -> (* t1 is a value *)
-                                                         (match t2 with
-                                                          | Abstraction(y, t2Body) -> substitute x t2 t1Body (* E-AppAbs *)
-                                                          | _                      -> (match (reduce_strict t2) with
-                                                                                       | Some t2' -> Application(t1, t2') (* E-APPL2 *)
-                                                                                       | None     -> None 
-                                                                                      )
-                                                         )
-                             | _                      -> (* t1 is NOT a value *)  
-                                                         (match (reduce_strict t1) with
-                                                          | Some t1' -> Application(t1', t2) (* E-APPL1 *)
-                                                          | None     -> None
-                                                         )
-                            )
-    | _                  -> None (* Only applications can be reduced in strict semantic *)
+
     
     
 (*
