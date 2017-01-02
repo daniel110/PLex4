@@ -3,7 +3,7 @@
 *)
 
 open Utils
-open Parser2
+open Parser
 
 
 exception OutOfVariablesError
@@ -28,15 +28,25 @@ in (let temp2=StringSet.is_empty temp in
  | false -> StringSet.choose temp
 )
   
-(* [x->s]t *)
-let rec substitute x s t =
-    match t with
+(* [x->s]trm *)
+let rec substitute x s trm =
+    match trm with
     | Variable y            -> let cmpResult = compare x y in 
                                (match cmpResult with
-                                | 0    -> s (* [x->s]x = s *)
-                                | _    -> t (* [x->s]y = y *))
-    | Application(t1, t2)   ->  Application((substitute x s t1), (substitute x s t2))
-    | _             -> raise (SyntaxError "Not Implemented yet.")
+                                | 0    -> s   (* [x->s]x = s *)
+                                | _    -> y   (* [x->s]y = y *)
+                               )
+    | Application(t1, t2)   -> Application((substitute x s t1), (substitute x s t2))
+    | Abstraction(y, t)     -> let cmpResult = compare x y in 
+                               (match cmpResult with
+                                | 0    -> Abstraction(x, t) (* [x->s](\x. t) = \x. t *)
+                                | _    -> let isYFreeInS = StringSet.mem y (fv s) in
+                                          (match isYFreeInS with 
+                                          | false -> Abstraction(y, (substitute x s t))
+                                          | true  -> let z = fresh_var (StringSet.add x (StringSet.union (fv s) (fv t))) in
+                                                     Abstraction(z, (substitute x s (substitute y z t)))
+                                          )
+                               )
   
 (*
   ADD FUNCTIONS BELOW
