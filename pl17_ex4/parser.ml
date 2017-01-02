@@ -3,7 +3,7 @@
 *)
 
 open Utils
-open Lexer2
+open Lexer
 
 
 (* AST for lambda expressions - DO NOT MODIFY THIS TYPE *)
