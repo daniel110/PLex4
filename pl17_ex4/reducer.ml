@@ -69,6 +69,7 @@ let rec reduce_strict trm =
     | _                  -> None (* Only applications can be reduced in strict semantic *)
     
     
+    
 (*
   ADD FUNCTIONS BELOW
 *)
