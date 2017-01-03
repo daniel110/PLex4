@@ -145,6 +145,36 @@ let inner_f = (\\x. (y x)) in
 (inner_f (z))
 "
 
+(* test 3 *)
+let test_basic_3_strict_expected = "((\z.(z z)) y)"
+let test_basic_3_lazy_expected = "(y y)"
+let test_basic_3_normal_expected = test_basic_3_lazy_expected
+
+let test_basic_3 = "
+let inner_f = ((\\x. x) (\\z. (z z))) in 
+(inner_f (y))
+"
+
+(* test 4 *)
+let test_basic_4_strict_expected = "((\\y.((\\z.z) y)) (\\y ((\\z.z) y)))"
+let test_basic_4_lazy_expected = "(\\y.((\\z.z) y))"
+let test_basic_4_normal_expected = "(\\y.y)"
+
+let test_basic_4 = "
+let inner_f = ((\\x. x) (\\z. (z z))) in 
+(inner_f (\\y. ((\\z. z) y)))
+"
+
+(* test 5 - bad *)
+let test_basic_5_strict_expected = "(x (\\y.((\\z.z) y)))"
+let test_basic_5_lazy_expected = "(x (\\y.((\\z.z) y)))"
+let test_basic_5_normal_expected = "(x (\\y.y))"
+
+let test_basic_5 = "
+let inner_f = (x) in 
+(inner_f (\\y. ((\\z. z) y)))
+"
+
 
 let () =
   test_all ~verbose:true test_and_1;
@@ -156,7 +186,24 @@ let () =
   test_normal ~verbose:false test_fact_l;
   test_normal ~verbose:false test_fact_s;
 
-  (* new test*)
-  test_lazy_Expected ~verbose:false test_basic_1 test_basic_1_lazy_expected
-  test_lazy_Expected ~verbose:false test_basic_2 test_basic_2_lazy_expected
-  test_strict_Expected ~verbose:false test_basic_2 test_basic_2_strict_expected
+  (* new tests*)
+	(* test 1*)
+	test_lazy_Expected ~verbose:false test_basic_1 test_basic_1_lazy_expected
+	test_strict_Expected ~verbose:false test_basic_1 test_basic_1_strict_expected
+	test_normal_Expected ~verbose:false test_basic_1 test_basic_1_normal_expected
+	(* test 2*)
+	test_lazy_Expected ~verbose:false test_basic_2 test_basic_2_lazy_expected
+	test_strict_Expected ~verbose:false test_basic_2 test_basic_2_strict_expected
+	test_normal_Expected ~verbose:false test_basic_2 test_basic_2_normal_expected
+	(* test 3*)
+	test_lazy_Expected ~verbose:false test_basic_3 test_basic_3_lazy_expected
+	test_strict_Expected ~verbose:false test_basic_3 test_basic_3_strict_expected
+	test_normal_Expected ~verbose:false test_basic_3 test_basic_3_normal_expected
+	(* test 4*)
+	test_lazy_Expected ~verbose:false test_basic_4 test_basic_4_lazy_expected
+	test_strict_Expected ~verbose:false test_basic_4 test_basic_4_strict_expected
+	test_normal_Expected ~verbose:false test_basic_4 test_basic_4_normal_expected
+	(* test 5*)
+	test_lazy_Expected ~verbose:false test_basic_5 test_basic_5_lazy_expected
+	test_strict_Expected ~verbose:false test_basic_5 test_basic_5_strict_expected
+	test_normal_Expected ~verbose:false test_basic_5 test_basic_5_normal_expected
