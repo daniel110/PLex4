@@ -109,20 +109,22 @@ let test_all ~verbose s =
 
 (* ---------- New test Utils ----------- *)
 
-(* added tests deafults to test_Expected *)
-let test_lazy_Expected = test_Expected ~sem:"lazy" ~reduce:reduce_lazy
-let test_strict_Expected = test_Expected ~sem:"strict" ~reduce:reduce_strict
-let test_normal_Expected = test_Expected ~sem:"normal-order" ~reduce:reduce_normal
-
 (* Created test runner which get also expected string result *)
 let test_Expected ~verbose ~sem ~reduce s expectedStr = 
   printf "\nEvaluating:\n%s\nin %s semantics:\n\n" s sem;
   let result = (evaluate ~verbose reduce (parse s)) in
   let stringRes = format_term result in
 	let cmpRes = compare stringRes expectedStr in
-		match cmpRes with
+		(match cmpRes with
 		| 0 -> printf "Success"
-		| _ -> printf "Expected: %s ,Got: %s\n" expectedStr stringRes;
+		| _ -> printf "Expected: %s ,Got: %s\n" expectedStr stringRes;)
+
+
+(* added tests deafults to test_Expected *)
+let test_lazy_Expected = test_Expected ~sem:"lazy" ~reduce:reduce_lazy
+let test_strict_Expected = test_Expected ~sem:"strict" ~reduce:reduce_strict
+let test_normal_Expected = test_Expected ~sem:"normal-order" ~reduce:reduce_normal
+
 
 (* ---------- New tests ----------- *)
 
@@ -146,7 +148,7 @@ let inner_f = (\\x. (y x)) in
 "
 
 (* test 3 *)
-let test_basic_3_strict_expected = "((\z.(z z)) y)"
+let test_basic_3_strict_expected = "((\\z.(z z)) y)"
 let test_basic_3_lazy_expected = "(y y)"
 let test_basic_3_normal_expected =  "(y y)"
 
