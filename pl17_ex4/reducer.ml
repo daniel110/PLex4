@@ -76,7 +76,7 @@ let rec reduce_strict trm =
 
 let rec reduce_lazy trm = match trm with
 | Application(t1,t2) -> (match t1 with
-							| Application(t3,t4) -> (match(reduce_lazy t1) with
+							| Application(t3,t4) -> (match (reduce_lazy t1) with
 														| Some t1' -> Some(Application(t1', t2))  (* E-APPL1 *)
 														| None -> None 
 														)
@@ -84,6 +84,30 @@ let rec reduce_lazy trm = match trm with
 							| _ -> None
 							)
 | _ -> None  (* Only applications can be reduced in lazy semantic *)
+
+
+let rec reduce_normal trm = match trm with
+| Application(t1,t2) -> let leftCalc = (match t1 with
+										| Abstraction(x,trm1)  -> Some(substitute x t2 trm1)  (* E-AppAbs *)
+										| Application(t3,t4) -> (match(reduce_normal t1) with
+																	| Some t1' -> Some(Application(t1', t2))  (* E-APPL1 *)
+																	| None -> None 
+																	)							
+										| _ -> None
+										)
+							in (match leftCalc with
+								| Some t1' -> Some t1' (* E-APPL1 succeded*)
+								| None -> (match (reduce_normal t2) with 
+											| Some t2' -> Some(Application(t1, t2')) (* E-APPL2 *)
+											| None -> None
+											)
+						    	      )
+| Abstraction(x,trm1) -> (match (reduce_normal trm1) with
+								| Some trm1' -> Some(Abstraction(x,trm1')) (* E-ABS *)
+								| None -> None
+						    	      )
+| _ -> None  (* Only applications and abstractions can be reduced in lazy semantic *)
+
 
 
 
