@@ -111,12 +111,12 @@ let test_all ~verbose s =
 
 (* Created test runner which get also expected string result *)
 let test_Expected ~verbose ~sem ~reduce s expectedStr = 
-  printf "\nEvaluating:\n%s\nin %s semantics:\n\n" s sem;
+  printf "\nEvaluating:%s\nin %s semantics:\n" s sem;
   let result = (evaluate ~verbose reduce (parse s)) in
   let stringRes = format_term result in
 	let cmpRes = compare stringRes expectedStr in
 		(match cmpRes with
-		| 0 -> printf "Success"
+		| 0 -> printf "Success\n"
 		| _ -> printf "Expected: %s ,Got: %s\n" expectedStr stringRes;)
 
 
@@ -158,7 +158,7 @@ let inner_f = ((\\x. x) (\\z. (z z))) in
 "
 
 (* test 4 *)
-let test_basic_4_strict_expected = "((\\y.((\\z.z) y)) (\\y ((\\z.z) y)))"
+let test_basic_4_strict_expected = "(\\y.((\\z.z) y))"
 let test_basic_4_lazy_expected = "(\\y.((\\z.z) y))"
 let test_basic_4_normal_expected = "(\\y.y)"
 
@@ -189,22 +189,27 @@ let () =
 
   (* new tests*)
 	(* test 1*)
+	printf "\nTest 1\n";
 	test_lazy_Expected ~verbose:false test_basic_1 test_basic_1_lazy_expected;
 	test_strict_Expected ~verbose:false test_basic_1 test_basic_1_strict_expected;
 	test_normal_Expected ~verbose:false test_basic_1 test_basic_1_normal_expected;
 	(* test 2*)
+	printf "\nTest 2\n";
 	test_lazy_Expected ~verbose:false test_basic_2 test_basic_2_lazy_expected;
 	test_strict_Expected ~verbose:false test_basic_2 test_basic_2_strict_expected;
 	test_normal_Expected ~verbose:false test_basic_2 test_basic_2_normal_expected;
 	(* test 3*)
+	printf "\nTest 3\n";
 	test_lazy_Expected ~verbose:false test_basic_3 test_basic_3_lazy_expected;
 	test_strict_Expected ~verbose:false test_basic_3 test_basic_3_strict_expected;
 	test_normal_Expected ~verbose:false test_basic_3 test_basic_3_normal_expected;
 	(* test 4*)
+	printf "\nTest 4\n";
 	test_lazy_Expected ~verbose:false test_basic_4 test_basic_4_lazy_expected;
 	test_strict_Expected ~verbose:false test_basic_4 test_basic_4_strict_expected;
 	test_normal_Expected ~verbose:false test_basic_4 test_basic_4_normal_expected;
 	(* test 5*)
+	printf "\nTest 5\n";
 	test_lazy_Expected ~verbose:false test_basic_5 test_basic_5_lazy_expected;
 	test_strict_Expected ~verbose:false test_basic_5 test_basic_5_strict_expected;
 	test_normal_Expected ~verbose:false test_basic_5 test_basic_5_normal_expected;
