@@ -107,6 +107,45 @@ let test_all ~verbose s =
   test_normal ~verbose s
 
 
+(* ---------- New test Utils ----------- *)
+
+(* added tests deafults to test_Expected *)
+let test_lazy_Expected = test_Expected ~sem:"lazy" ~reduce:reduce_lazy
+let test_strict_Expected = test_Expected ~sem:"strict" ~reduce:reduce_strict
+let test_normal_Expected = test_Expected ~sem:"normal-order" ~reduce:reduce_normal
+
+(* Created test runner which get also expected string result *)
+let test_Expected ~verbose ~sem ~reduce s expectedStr = 
+  printf "\nEvaluating:\n%s\nin %s semantics:\n\n" s sem;
+  let result = (evaluate ~verbose reduce (parse s)) in
+  let stringRes = format_term result in
+	let cmpRes = compare stringRes expectedStr in
+		match cmpRes with
+		| 0 -> printf "Success"
+		| _ -> printf "Expected: %s ,Got: %s\n" expectedStr stringRes;
+
+(* ---------- New tests ----------- *)
+
+(* test 1 *)
+let test_basic_1_strict_expected = "(y (\\z.z))"
+let test_basic_1_lazy_expected = test_basic_1_strict_expected 
+let test_basic_1_normal_expected = test_basic_1_strict_expected
+
+let test_basic_1 = "
+let inner_f = (\\x. (y x)) in 
+(inner_f (\\z.z))
+"
+(* test 2 *)
+let test_basic_2_strict_expected = "((\\x.(y x)) z)"
+let test_basic_2_lazy_expected = "(y z)"
+let test_basic_2_normal_expected = test_basic_2_lazy_expected
+
+let test_basic_2 = "
+let inner_f = (\\x. (y x)) in 
+(inner_f (z))
+"
+
+
 let () =
   test_all ~verbose:true test_and_1;
   test_all ~verbose:true test_and_2;
@@ -115,4 +154,9 @@ let () =
   test_lazy ~verbose:false test_fact_l_complex;
   test_strict ~verbose:false test_fact_s;
   test_normal ~verbose:false test_fact_l;
-  test_normal ~verbose:false test_fact_s
+  test_normal ~verbose:false test_fact_s;
+
+  (* new test*)
+  test_lazy_Expected ~verbose:false test_basic_1 test_basic_1_lazy_expected
+  test_lazy_Expected ~verbose:false test_basic_2 test_basic_2_lazy_expected
+  test_strict_Expected ~verbose:false test_basic_2 test_basic_2_strict_expected
