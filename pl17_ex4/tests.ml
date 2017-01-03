@@ -128,8 +128,8 @@ let test_Expected ~verbose ~sem ~reduce s expectedStr =
 
 (* test 1 *)
 let test_basic_1_strict_expected = "(y (\\z.z))"
-let test_basic_1_lazy_expected = test_basic_1_strict_expected 
-let test_basic_1_normal_expected = test_basic_1_strict_expected
+let test_basic_1_lazy_expected =  "(y (\\z.z))"
+let test_basic_1_normal_expected =  "(y (\\z.z))"
 
 let test_basic_1 = "
 let inner_f = (\\x. (y x)) in 
@@ -138,7 +138,7 @@ let inner_f = (\\x. (y x)) in
 (* test 2 *)
 let test_basic_2_strict_expected = "((\\x.(y x)) z)"
 let test_basic_2_lazy_expected = "(y z)"
-let test_basic_2_normal_expected = test_basic_2_lazy_expected
+let test_basic_2_normal_expected = "(y z)"
 
 let test_basic_2 = "
 let inner_f = (\\x. (y x)) in 
@@ -148,7 +148,7 @@ let inner_f = (\\x. (y x)) in
 (* test 3 *)
 let test_basic_3_strict_expected = "((\z.(z z)) y)"
 let test_basic_3_lazy_expected = "(y y)"
-let test_basic_3_normal_expected = test_basic_3_lazy_expected
+let test_basic_3_normal_expected =  "(y y)"
 
 let test_basic_3 = "
 let inner_f = ((\\x. x) (\\z. (z z))) in 
@@ -174,7 +174,6 @@ let test_basic_5 = "
 let inner_f = (x) in 
 (inner_f (\\y. ((\\z. z) y)))
 "
-
 
 let () =
   test_all ~verbose:true test_and_1;
