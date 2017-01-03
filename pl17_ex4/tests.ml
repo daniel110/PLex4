@@ -33,6 +33,7 @@ let and = (\\b.(\\c. ((b c) fls))) in
 ((and fls) ((and tru) tru))
 "
 
+
 let env = "
 let tru = (\\t. (\\f. t)) in
 let fls = (\\t. (\\f. f)) in
@@ -54,6 +55,7 @@ let c7 = (\\s. (\\z. (s (s (s (s (s (s (s z))))))))) in
 let c8 = (\\s. (\\z. (s (s (s (s (s (s (s (s z)))))))))) in
 let c9 = (\\s. (\\z. (s (s (s (s (s (s (s (s (s z))))))))))) in
 let c10 = (\\s. (\\z. (s (s (s (s (s (s (s (s (s (s z)))))))))))) in
+let c24 = (\\s. (\\z. (s (s (s (s (s (s (s (s (s (s (s (s (s (s (s (s (s (s (s (s (s (s (s (s z)))))))))))))))))))))))))) in
 
 let scc = (\\n. (\\s. (\\z. (s ((n s) z))))) in
 let plus = (\\m. (\\n. (\\s. (\\z. ((m s) ((n s) z)))))) in
@@ -80,6 +82,16 @@ let fact_s = (Z (\\f. (\\n. ((((test (iszero n)) (\\x. c1)) (\\x. (((times n) (f
 ((equal (fact_s c2)) c2)
 "
 
+let test_fact_l_complex = env ^ "
+let fact_l = (Y (\\f. (\\n. (((test (iszero n)) c1) (((times n) (f (prd n)))))))) in
+((equal (fact_l c3)) c6)
+"
+
+(* very long test  - takes 10 minutes *)
+let test_fact_l_complex_long_run = env ^ "
+let fact_l = (Y (\\f. (\\n. (((test (iszero n)) c1) (((times n) (f (prd n)))))))) in
+((equal (fact_l c4)) c24)
+"
 
 let test ~verbose ~sem ~reduce s =
   printf "\nEvaluating:\n%s\nin %s semantics:\n\n" s sem;
@@ -100,6 +112,7 @@ let () =
   test_all ~verbose:true test_and_2;
 
   test_lazy ~verbose:false test_fact_l;
+  test_lazy ~verbose:false test_fact_l_complex;
   test_strict ~verbose:false test_fact_s;
   test_normal ~verbose:false test_fact_l;
   test_normal ~verbose:false test_fact_s

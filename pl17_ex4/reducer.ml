@@ -10,6 +10,11 @@ exception OutOfVariablesError
 
 
 let possible_variables = List.map (fun x -> char_to_string (char_of_int x)) ((range 97 123) @ (range 65 91))
+
+(*
+  ADD FUNCTIONS BELOW
+*)
+
 let possible_variables_set=StringSet.of_list possible_variables
 
 
@@ -68,11 +73,18 @@ let rec reduce_strict trm =
                             )
     | _                  -> None (* Only applications can be reduced in strict semantic *)
     
-    
-    
-(*
-  ADD FUNCTIONS BELOW
-*)
+
+let rec reduce_lazy trm = match trm with
+| Application(t1,t2) -> (match t1 with
+							| Application(t3,t4) -> (match(reduce_lazy t1) with
+														| Some t1' -> Some(Application(t1', t2))  (* E-APPL1 *)
+														| None -> None 
+														)
+							| Abstraction(x,trm1)  -> Some(substitute x t2 trm1)  (* E-AppAbs *)
+							| _ -> None
+							)
+| _ -> None  (* Only applications can be reduced in lazy semantic *)
+
 
 
 
