@@ -167,8 +167,8 @@ let inner_f = ((\\x. x) (\\z. (z z))) in
 (inner_f (\\y. ((\\z. z) y)))
 "
 
-(* test 5 - bad *)
-let test_basic_5_strict_expected = "(x (\\y.((\\z.z) y)))"
+(* test 5  *)
+let test_basic_5_strict_expected = "((\\inner_f.(inner_f (\\y.((\\z.z) y)))) x)"
 let test_basic_5_lazy_expected = "(x (\\y.((\\z.z) y)))"
 let test_basic_5_normal_expected = "(x (\\y.y))"
 
@@ -213,3 +213,5 @@ let () =
 	test_lazy_Expected ~verbose:false test_basic_5 test_basic_5_lazy_expected;
 	test_strict_Expected ~verbose:false test_basic_5 test_basic_5_strict_expected;
 	test_normal_Expected ~verbose:false test_basic_5 test_basic_5_normal_expected;
+
+
