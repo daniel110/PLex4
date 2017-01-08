@@ -31,11 +31,11 @@ let rec parse_term ts =
    
   | LParen :: LambdaTok :: (Literal id) :: DotTok :: ts'-> let (r,ts'')=parse_term ts' in (match ts'' with
                           | RParen::ts'' -> Abstraction (id,r), ts''
-                          | _ -> raise (SyntaxError "Invalid syntax: LParen is expected.\n")
+                          | _ -> raise (SyntaxError "Invalid syntax: RParen is expected.\n")
                         )
   | LParen :: ts' -> let (r,ts'')=parse_term ts' in (match ts'' with
                   | RParen::ts''' -> r,ts'''
-                  | [] -> raise (SyntaxError "Invalid syntax.\n")
+                  | [] -> raise (SyntaxError "Invalid syntax: RParen is expected.\n")
                   | _ -> let (r',ts''')=parse_term ts'' in (match ts''' with
                               | RParen::ts'''' -> Application(r,r'),ts''''
                               | _ -> raise (SyntaxError "Invalid syntax: RParen is expected.\n")

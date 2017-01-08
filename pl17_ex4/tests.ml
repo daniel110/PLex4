@@ -116,7 +116,7 @@ let test_Expected ~verbose ~sem ~reduce s expectedStr =
   let stringRes = format_term result in
 	let cmpRes = compare stringRes expectedStr in
 		(match cmpRes with
-		| 0 -> printf "Success\n"
+		| 0 -> printf "Success\n";
 		| _ -> printf "Expected: %s ,Got: %s\n" expectedStr stringRes;)
 
 
@@ -125,6 +125,23 @@ let test_lazy_Expected = test_Expected ~sem:"lazy" ~reduce:reduce_lazy
 let test_strict_Expected = test_Expected ~sem:"strict" ~reduce:reduce_strict
 let test_normal_Expected = test_Expected ~sem:"normal-order" ~reduce:reduce_normal
 
+
+(* parser check report error *)
+let test_parser s = 
+		try
+			format_term (parse s)
+		with
+		SyntaxError s ->  s
+
+let test_parser_expected s expectedValue  =
+	printf "Parsing:\n%s\n" s;
+	let strRes = test_parser s in
+		(match strRes with
+			| ev when ev = expectedValue -> printf "Success\n";
+			| _ -> printf "Expected: %s ,Got: %s\n" expectedValue strRes;
+		)
+		
+		
 
 (* ---------- New tests ----------- *)
 
@@ -177,6 +194,17 @@ let inner_f = (x) in
 (inner_f (\\y. ((\\z. z) y)))
 "
 
+(* test 6  *)
+let test_basic_6_strict_expected = "(x (\\y.((\\z.z) y)))"
+let test_basic_6_lazy_expected = "(x (\\y.((\\z.z) y)))"
+let test_basic_6_normal_expected = "(x (\\y.y))"
+
+let test_basic_6 = "
+(x (\\y. ((\\z. z) y)))
+"
+
+
+
 let () =
   test_all ~verbose:true test_and_1;
   test_all ~verbose:true test_and_2;
@@ -187,7 +215,7 @@ let () =
   test_normal ~verbose:false test_fact_l;
   test_normal ~verbose:false test_fact_s;
 
-  (* new tests*)
+  (* reduce new tests *)
 	(* test 1*)
 	printf "\nTest 1\n";
 	test_lazy_Expected ~verbose:false test_basic_1 test_basic_1_lazy_expected;
@@ -213,5 +241,47 @@ let () =
 	test_lazy_Expected ~verbose:false test_basic_5 test_basic_5_lazy_expected;
 	test_strict_Expected ~verbose:false test_basic_5 test_basic_5_strict_expected;
 	test_normal_Expected ~verbose:false test_basic_5 test_basic_5_normal_expected;
+	(* test 6*)
+	printf "\nTest 6\n";
+	test_lazy_Expected ~verbose:false test_basic_6 test_basic_6_lazy_expected;
+	test_strict_Expected ~verbose:false test_basic_6 test_basic_6_strict_expected;
+	test_normal_Expected ~verbose:false test_basic_6 test_basic_6_normal_expected;
 
 
+  (* parser tests *)
+	printf "\nParsing tests:\n";
+	(* test 7*)
+	printf "\nTest 7\n";
+	test_parser_expected "(x" "Invalid syntax: RParen is expected.\n";
+
+	(* test 8*)
+	printf "\nTest 8\n";
+	test_parser_expected "(x)" "x";	
+
+	(* test 9*)
+	printf "\nTest 9\n";
+	test_parser_expected "x" "x";
+
+	(* test 10*)
+	printf "\nTest 10\n";
+	test_parser_expected "(\\x.(x x))" "(\\x.(x x))";
+
+	(* test 11*)
+	printf "\nTest 11\n";
+	test_parser_expected "\\x.(x x)" "Invalid syntax of term\n";
+
+	(* test 12*)
+	printf "\nTest 12\n";
+	test_parser_expected "((\\x.(y x)" "Invalid syntax: RParen is expected.\n";
+
+	(* test 13*)
+	printf "\nTest 13\n";
+	test_parser_expected "(\\x.(x x)) ((((\\x.(%% x)))" "Unexpected input.\n";
+
+	(* test 14*)
+	printf "\nTest 14\n";
+	test_parser_expected "((\\x.(x x)) ((((\\x.(%% x))))" "Invalid syntax: RParen is expected.\n";
+
+	(* test 15*)
+	printf "\nTest 15\n";
+	test_parser_expected "(x x" "Invalid syntax: RParen is expected.\n";
