@@ -140,6 +140,18 @@ let test_parser_expected s expectedValue  =
 			| ev when ev = expectedValue -> printf "Success\n";
 			| _ -> printf "Expected: %s ,Got: %s\n" expectedValue strRes;
 		)
+        
+(* substitute tests *)
+let test_substitute x t1 t2 =
+    format_term (substitute x (parse t1) (parse t2))
+
+let test_substitute_expected x t1 t2 expectedValue = 
+    printf "Substituting:\n[%s->%s]%s\n" x t1 t2;
+    let strRes = test_substitute x t1 t2 in
+        (match strRes with
+			| ev when ev = expectedValue -> printf "Success\n";
+			| _ -> printf "Expected: %s ,Got: %s\n" expectedValue strRes;
+		)
 		
 		
 
@@ -285,3 +297,85 @@ let () =
 	(* test 15*)
 	printf "\nTest 15\n";
 	test_parser_expected "(x x" "Invalid syntax: RParen is expected.\n";
+
+    
+    (* substitute tests *)
+    printf "\nSubstitute tests:\n";
+    (* test 16 *)
+    printf "\nTest 16\n";
+    test_substitute_expected "x" "y" "x" "y";
+    
+    (* test 17 *)
+    printf "\nTest 17\n";
+    test_substitute_expected "x" "x" "x" "x";
+    
+    (* test 18 *)
+    printf "\nTest 18\n";
+    test_substitute_expected "x" "(\\y.y)" "x" "(\\y.y)";
+    
+    (* test 19 *)
+    printf "\nTest 19\n";
+    test_substitute_expected "x" "(\\x.x)" "x" "(\\x.x)";
+    
+    (* test 20 *)
+    printf "\nTest 20\n";
+    test_substitute_expected "x" "(x y)" "x" "(x y)";
+    
+    (* test 21 *)
+    printf "\nTest 21\n";
+    test_substitute_expected "y" "z" "y" "z";
+    
+    (* test 22 *)
+    printf "\nTest 22\n";
+    test_substitute_expected "x" "s" "y" "y";
+    
+    (* test 23 *)
+    printf "\nTest 23\n";
+    test_substitute_expected "x" "x" "y" "y";
+    
+    (* test 24 *)
+    printf "\nTest 24\n";
+    test_substitute_expected "x" "(\\x. x)" "y" "y";
+    
+    (* test 25 *)
+    printf "\nTest 25\n";
+    test_substitute_expected "x" "s" "(x x)" "(s s)";
+        
+    (* test 26 *)
+    printf "\nTest 26\n";
+    test_substitute_expected "x" "s" "(y y)" "(y y)";
+         
+    (* test 27 *)
+    printf "\nTest 27\n";
+    test_substitute_expected "x" "s" "((x y) y)" "((s y) y)";
+    
+    (* test 28 *)
+    printf "\nTest 28\n";
+    test_substitute_expected "x" "s" "(\\x. t)" "(\\x.t)";
+        
+    (* test 29 *)
+    printf "\nTest 29\n";
+    test_substitute_expected "x" "s" "(\\x. (\\x. x))" "(\\x.(\\x.x))";
+    
+    (* test 30 *)
+    printf "\nTest 30\n";
+    test_substitute_expected "x" "(t1 t2)" "(\\y. x)" "(\\y.(t1 t2))";
+    
+    (* test 31 *)
+    printf "\nTest 31\n";
+    test_substitute_expected "x" "(x y)" "(\\y. (x y))" "(\\A.((x y) A))";
+    
+    (* test 32 *)
+    printf "\nTest 32\n";
+    test_substitute_expected "x" "(u r)" "(x (\\x. x))" "((u r) (\\x.x))";
+    
+    (* test 33 *)
+    printf "\nTest 33\n";
+    test_substitute_expected "x" "(\\x. (x x))" "(x x)" "((\\x.(x x)) (\\x.(x x)))";
+    
+    (* test 34 *)
+    printf "\nTest 34\n";
+    test_substitute_expected "x" "((\\u. u)(\\w. w))" "(\\y. ((\\z. z) y))" "(\\y.((\\z.z) y))";
+    
+    
+    
