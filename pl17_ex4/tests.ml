@@ -131,7 +131,7 @@ let test_parser s =
 		try
 			format_term (parse s)
 		with
-		SyntaxError s ->  s
+		SyntaxError err ->  err
 
 let test_parser_expected s expectedValue  =
 	printf "Parsing:\n%s\n" s;
@@ -143,7 +143,10 @@ let test_parser_expected s expectedValue  =
         
 (* substitute tests *)
 let test_substitute x t1 t2 =
-    format_term (substitute x (parse t1) (parse t2))
+		try
+			format_term (substitute x (parse t1) (parse t2))
+		with
+		OutOfVariablesError ->  "OutOfVariablesError"
 
 let test_substitute_expected x t1 t2 expectedValue = 
     printf "Substituting:\n[%s->%s]%s\n" x t1 t2;
@@ -377,5 +380,12 @@ let () =
     printf "\nTest 34\n";
     test_substitute_expected "x" "((\\u. u)(\\w. w))" "(\\y. ((\\z. z) y))" "(\\y.((\\z.z) y))";
     
+    (* test 35 *)
+    printf "\nTest 35\n";
+    let term_with_all_variables = "(\\A. (\\B. (\\C. (\\D. (\\E. (\\F. (\\G. (\\H. (\\I. (\\J. (\\K. (\\L. (\\M. (\\N. (\\O. (\\P. (\\Q. (\\R. (\\S. (\\T. (\\U. (\\V. (\\W. (\\X. (\\Y. (\\Z. (\\a. (\\b. (\\c. (\\d. (\\e. (\\f. (\\g. (\\h. (\\i. (\\j. (\\k. (\\l. (\\m. (\\n. (\\o. (\\p. (\\q. (\\r. (\\s. (\\t. (\\u. (\\v. (\\w. (\\x. (\\y. (\\z. x))))))))))))))))))))))))))))))))))))))))))))))))))))"
+    in
+        let term_with_all_fv = "(((((((((((((((((((((((((((((((((((((((((((((((((((A B) C) D) E) F) G) H) I) J) K) L) M) N) O) P) Q) R) S) T) U) V) W) X) Y) Z) a) b) c) d) e) f) g) h) i) j) k) l) m) n) o) p) q) r) s) t) u) v) w) x) y) z)"
+        in
+            test_substitute_expected "x" term_with_all_fv term_with_all_variables "OutOfVariablesError";
     
     
