@@ -58,7 +58,7 @@ let parse s = let (r, ts) =
 
 let rec format_term = function
   | Variable str -> str
-  | Abstraction (str,t) -> "("^"\\"^str^"."^(format_term t)^")"
+  | Abstraction (str,t) -> "("^"\\"^str^". "^(format_term t)^")"
   | Application (t1,t2) -> let t1'=format_term t1 in
                let t2'=format_term t2 in
                "("^t1'^" "^t2'^")"

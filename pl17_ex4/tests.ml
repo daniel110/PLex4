@@ -161,16 +161,16 @@ let test_substitute_expected x t1 t2 expectedValue =
 (* ---------- New tests ----------- *)
 
 (* test 1 *)
-let test_basic_1_strict_expected = "(y (\\z.z))"
-let test_basic_1_lazy_expected =  "(y (\\z.z))"
-let test_basic_1_normal_expected =  "(y (\\z.z))"
+let test_basic_1_strict_expected = "(y (\\z. z))"
+let test_basic_1_lazy_expected =  "(y (\\z. z))"
+let test_basic_1_normal_expected =  "(y (\\z. z))"
 
 let test_basic_1 = "
 let inner_f = (\\x. (y x)) in 
-(inner_f (\\z.z))
+(inner_f (\\z. z))
 "
 (* test 2 *)
-let test_basic_2_strict_expected = "((\\x.(y x)) z)"
+let test_basic_2_strict_expected = "((\\x. (y x)) z)"
 let test_basic_2_lazy_expected = "(y z)"
 let test_basic_2_normal_expected = "(y z)"
 
@@ -180,7 +180,7 @@ let inner_f = (\\x. (y x)) in
 "
 
 (* test 3 *)
-let test_basic_3_strict_expected = "((\\z.(z z)) y)"
+let test_basic_3_strict_expected = "((\\z. (z z)) y)"
 let test_basic_3_lazy_expected = "(y y)"
 let test_basic_3_normal_expected =  "(y y)"
 
@@ -190,9 +190,9 @@ let inner_f = ((\\x. x) (\\z. (z z))) in
 "
 
 (* test 4 *)
-let test_basic_4_strict_expected = "(\\y.((\\z.z) y))"
-let test_basic_4_lazy_expected = "(\\y.((\\z.z) y))"
-let test_basic_4_normal_expected = "(\\y.y)"
+let test_basic_4_strict_expected = "(\\y. ((\\z. z) y))"
+let test_basic_4_lazy_expected = "(\\y. ((\\z. z) y))"
+let test_basic_4_normal_expected = "(\\y. y)"
 
 let test_basic_4 = "
 let inner_f = ((\\x. x) (\\z. (z z))) in 
@@ -200,9 +200,9 @@ let inner_f = ((\\x. x) (\\z. (z z))) in
 "
 
 (* test 5  *)
-let test_basic_5_strict_expected = "((\\inner_f.(inner_f (\\y.((\\z.z) y)))) x)"
-let test_basic_5_lazy_expected = "(x (\\y.((\\z.z) y)))"
-let test_basic_5_normal_expected = "(x (\\y.y))"
+let test_basic_5_strict_expected = "((\\inner_f. (inner_f (\\y. ((\\z. z) y)))) x)"
+let test_basic_5_lazy_expected = "(x (\\y. ((\\z. z) y)))"
+let test_basic_5_normal_expected = "(x (\\y. y))"
 
 let test_basic_5 = "
 let inner_f = (x) in 
@@ -210,9 +210,9 @@ let inner_f = (x) in
 "
 
 (* test 6  *)
-let test_basic_6_strict_expected = "(x (\\y.((\\z.z) y)))"
-let test_basic_6_lazy_expected = "(x (\\y.((\\z.z) y)))"
-let test_basic_6_normal_expected = "(x (\\y.y))"
+let test_basic_6_strict_expected = "(x (\\y. ((\\z. z) y)))"
+let test_basic_6_lazy_expected = "(x (\\y. ((\\z. z) y)))"
+let test_basic_6_normal_expected = "(x (\\y. y))"
 
 let test_basic_6 = "
 (x (\\y. ((\\z. z) y)))
@@ -279,23 +279,23 @@ let () =
 
 	(* test 10*)
 	printf "\nTest 10\n";
-	test_parser_expected "(\\x.(x x))" "(\\x.(x x))";
+	test_parser_expected "(\\x. (x x))" "(\\x. (x x))";
 
 	(* test 11*)
 	printf "\nTest 11\n";
-	test_parser_expected "\\x.(x x)" "Invalid syntax of term\n";
+	test_parser_expected "\\x. (x x)" "Invalid syntax of term\n";
 
 	(* test 12*)
 	printf "\nTest 12\n";
-	test_parser_expected "((\\x.(y x)" "Invalid syntax: RParen is expected.\n";
+	test_parser_expected "((\\x. (y x)" "Invalid syntax: RParen is expected.\n";
 
 	(* test 13*)
 	printf "\nTest 13\n";
-	test_parser_expected "(\\x.(x x)) ((((\\x.(%% x)))" "Unexpected input.\n";
+	test_parser_expected "(\\x.(x x)) ((((\\x. (%% x)))" "Unexpected input.\n";
 
 	(* test 14*)
 	printf "\nTest 14\n";
-	test_parser_expected "((\\x.(x x)) ((((\\x.(%% x))))" "Invalid syntax: RParen is expected.\n";
+	test_parser_expected "((\\x.(x x)) ((((\\x. (%% x))))" "Invalid syntax: RParen is expected.\n";
 
 	(* test 15*)
 	printf "\nTest 15\n";
@@ -314,11 +314,11 @@ let () =
     
     (* test 18 *)
     printf "\nTest 18\n";
-    test_substitute_expected "x" "(\\y.y)" "x" "(\\y.y)";
+    test_substitute_expected "x" "(\\y. y)" "x" "(\\y. y)";
     
     (* test 19 *)
     printf "\nTest 19\n";
-    test_substitute_expected "x" "(\\x.x)" "x" "(\\x.x)";
+    test_substitute_expected "x" "(\\x. x)" "x" "(\\x. x)";
     
     (* test 20 *)
     printf "\nTest 20\n";
@@ -354,31 +354,31 @@ let () =
     
     (* test 28 *)
     printf "\nTest 28\n";
-    test_substitute_expected "x" "s" "(\\x. t)" "(\\x.t)";
+    test_substitute_expected "x" "s" "(\\x. t)" "(\\x. t)";
         
     (* test 29 *)
     printf "\nTest 29\n";
-    test_substitute_expected "x" "s" "(\\x. (\\x. x))" "(\\x.(\\x.x))";
+    test_substitute_expected "x" "s" "(\\x. (\\x. x))" "(\\x. (\\x. x))";
     
     (* test 30 *)
     printf "\nTest 30\n";
-    test_substitute_expected "x" "(t1 t2)" "(\\y. x)" "(\\y.(t1 t2))";
+    test_substitute_expected "x" "(t1 t2)" "(\\y. x)" "(\\y. (t1 t2))";
     
     (* test 31 *)
     printf "\nTest 31\n";
-    test_substitute_expected "x" "(x y)" "(\\y. (x y))" "(\\A.((x y) A))";
+    test_substitute_expected "x" "(x y)" "(\\y. (x y))" "(\\A. ((x y) A))";
     
     (* test 32 *)
     printf "\nTest 32\n";
-    test_substitute_expected "x" "(u r)" "(x (\\x. x))" "((u r) (\\x.x))";
+    test_substitute_expected "x" "(u r)" "(x (\\x. x))" "((u r) (\\x. x))";
     
     (* test 33 *)
     printf "\nTest 33\n";
-    test_substitute_expected "x" "(\\x. (x x))" "(x x)" "((\\x.(x x)) (\\x.(x x)))";
+    test_substitute_expected "x" "(\\x. (x x))" "(x x)" "((\\x. (x x)) (\\x. (x x)))";
     
     (* test 34 *)
     printf "\nTest 34\n";
-    test_substitute_expected "x" "((\\u. u)(\\w. w))" "(\\y. ((\\z. z) y))" "(\\y.((\\z.z) y))";
+    test_substitute_expected "x" "((\\u. u)(\\w. w))" "(\\y. ((\\z. z) y))" "(\\y. ((\\z. z) y))";
     
     (* test 35 *)
     printf "\nTest 35\n";
